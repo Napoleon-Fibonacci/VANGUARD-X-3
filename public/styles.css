@@ -1,0 +1,1627 @@
+/* ==========================================================================
+   X-3 VANGUARD - MEDIEVAL DESIGN SYSTEM & STYLESHEET
+   SMAN 1 CICURUG
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. GOOGLE FONTS & CSS VARIABLES
+   -------------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=MedievalSharp&display=swap');
+
+:root {
+  /* Color Palette - Royal Medieval */
+  --bg-dark-base: #0c0a08;
+  --bg-stone-dark: #14110e;
+  --bg-stone-card: #1c1713;
+  --bg-stone-light: #28211b;
+  
+  --parchment-bg: #f4e8c1;
+  --parchment-dark: #ded0a5;
+  --parchment-text: #2a2219;
+  
+  --gold-primary: #d4af37;
+  --gold-bright: #f7d070;
+  --gold-dark: #96761c;
+  --gold-glow: rgba(212, 175, 55, 0.4);
+  
+  --crimson-royal: #7a1c1c;
+  --crimson-bright: #a32222;
+  --crimson-glow: rgba(122, 28, 28, 0.5);
+  
+  --iron-border: #4a3e35;
+  --iron-dark: #221d19;
+  
+  --text-primary: #f5eedb;
+  --text-muted: #bfae99;
+  --text-gold: #e5c365;
+
+  /* Typography */
+  --font-title: 'Cinzel Decorative', cursive, serif;
+  --font-heading: 'Cinzel', serif;
+  --font-medieval: 'MedievalSharp', cursive, serif;
+  --font-body: 'Cormorant Garamond', serif;
+
+  /* Transitions & Shadows */
+  --transition-smooth: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  --shadow-castle: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.15);
+  --shadow-gold-inset: inset 0 0 12px rgba(212, 175, 55, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   2. RESET & BASE STYLES
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background-color: var(--bg-dark-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  line-height: 1.7;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(122, 28, 28, 0.25) 0%, transparent 60%),
+    radial-gradient(circle at 100% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(20, 17, 14, 0.9) 0%, transparent 80%);
+  background-attachment: fixed;
+}
+
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-in {
+  opacity: 0;
+  animation: heroIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--d, 0s);
+}
+
+/* Custom Medieval Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark-base);
+  border-left: 1px solid var(--iron-border);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gold-dark), var(--crimson-royal), var(--gold-dark));
+  border-radius: 4px;
+  border: 2px solid var(--bg-dark-base);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-primary);
+}
+
+/* Typography Defaults */
+h1, h2, h3, h4, .font-title {
+  font-family: var(--font-title);
+  color: var(--gold-bright);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(212, 175, 55, 0.3);
+  letter-spacing: 1px;
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+h3 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--gold-primary);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+a:hover {
+  color: var(--gold-bright);
+  text-shadow: 0 0 8px var(--gold-glow);
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section-subtitle {
+  font-family: var(--font-medieval);
+  color: var(--text-muted);
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* Medieval Divider SVG */
+.medieval-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+}
+.medieval-divider svg {
+  width: 280px;
+  height: 24px;
+  fill: var(--gold-primary);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+/* --------------------------------------------------------------------------
+   3. ANIMATIONS & KEYFRAMES
+   -------------------------------------------------------------------------- */
+@keyframes torchFlicker {
+  0%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 15px rgba(247, 166, 0, 0.8)) drop-shadow(0 0 30px rgba(212, 60, 0, 0.6));
+    transform: scale(1);
+  }
+  25% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 10px rgba(247, 140, 0, 0.7)) drop-shadow(0 0 25px rgba(180, 40, 0, 0.5));
+    transform: scale(0.98) rotate(-1deg);
+  }
+  50% {
+    opacity: 0.95;
+    filter: drop-shadow(0 0 20px rgba(255, 190, 40, 0.9)) drop-shadow(0 0 35px rgba(230, 80, 0, 0.7));
+    transform: scale(1.02) rotate(1deg);
+  }
+  75% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 12px rgba(247, 150, 0, 0.75)) drop-shadow(0 0 20px rgba(200, 50, 0, 0.55));
+    transform: scale(0.99);
+  }
+}
+
+@keyframes bannerWave {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(1.5deg) translateY(-3px); }
+}
+
+@keyframes goldGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px var(--gold-glow), inset 0 0 10px rgba(212, 175, 55, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(247, 208, 112, 0.7), inset 0 0 18px rgba(247, 208, 112, 0.4);
+  }
+}
+
+@keyframes crestPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px var(--gold-glow)); }
+  50% { transform: scale(1.04); filter: drop-shadow(0 0 30px rgba(247, 208, 112, 0.6)); }
+}
+
+@keyframes scrollReveal {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Scroll reveal utility class */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   4. NAVIGATION BAR (CASTLE GATE NAVBAR)
+   -------------------------------------------------------------------------- */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: linear-gradient(180deg, rgba(12, 10, 8, 0.95) 0%, rgba(20, 17, 14, 0.85) 100%);
+  border-bottom: 2px solid var(--iron-border);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  transition: var(--transition-smooth);
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 76px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.brand-crest {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  fill: var(--gold-bright);
+  animation: crestPulse 4s infinite ease-in-out;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  color: var(--gold-bright);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.brand-subtitle {
+  font-family: var(--font-medieval);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.1rem;
+  list-style: none;
+  flex-wrap: nowrap;
+}
+
+.nav-link {
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding: 0.4rem 0;
+  white-space: nowrap;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--gold-bright);
+  transition: var(--transition-smooth);
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px var(--gold-bright);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--gold-bright);
+}
+
+/* Mobile Hamburger Toggle */
+.hamburger {
+  display: none;
+  background: none;
+  border: 1px solid var(--gold-primary);
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--gold-bright);
+}
+.hamburger svg {
+  width: 26px;
+  height: 26px;
+  fill: currentColor;
+}
+
+/* --------------------------------------------------------------------------
+   5. HERO SECTION
+   -------------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  padding-top: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: 
+    radial-gradient(ellipse at center, rgba(122, 28, 28, 0.4) 0%, rgba(12, 10, 8, 0.95) 75%),
+    url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1600&auto=format&fit=crop&q=80') center/cover no-repeat;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(12,10,8,0.7) 0%, rgba(12,10,8,0.85) 70%, #0c0a08 100%);
+  z-index: 1;
+}
+
+/* Canvas Particle Layer */
+#emberCanvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  max-width: 900px;
+  padding: 2rem;
+}
+
+/* Torch Accents */
+.torch-container {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 30%;
+  left: 5%;
+  right: 5%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.torch {
+  width: 60px;
+  height: 100px;
+  animation: torchFlicker 3s infinite ease-in-out;
+}
+.torch svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--gold-bright);
+}
+
+.hero-crest-wrap {
+  margin-bottom: 1.5rem;
+}
+
+.hero-crest {
+  width: 130px;
+  height: 130px;
+  filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.6));
+  animation: crestPulse 5s infinite ease-in-out;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--crimson-royal), #3a0d0d);
+  color: var(--gold-bright);
+  font-family: var(--font-medieval);
+  padding: 0.4rem 1.4rem;
+  border-radius: 20px;
+  border: 1px solid var(--gold-primary);
+  font-size: 0.95rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+}
+
+.hero-title {
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  line-height: 1.05;
+  margin-bottom: 1rem;
+  background: linear-gradient(180deg, #ffffff 0%, var(--gold-bright) 50%, var(--gold-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.9));
+}
+
+.hero-tagline {
+  font-family: var(--font-medieval);
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  color: var(--text-primary);
+  margin-bottom: 2.5rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+
+/* Medieval CTA Button */
+.btn-medieval {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 2.5rem;
+  background: linear-gradient(135deg, var(--crimson-royal) 0%, #4a0c0c 50%, var(--crimson-bright) 100%);
+  color: var(--gold-bright);
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border: 2px solid var(--gold-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.8), inset 0 0 10px rgba(212, 175, 55, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-smooth);
+}
+
+.btn-medieval::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: rotate(45deg) translateY(-100%);
+  transition: transform 0.6s ease;
+}
+
+.btn-medieval:hover::before {
+  transform: rotate(45deg) translateY(100%);
+}
+
+.btn-medieval:hover {
+  transform: translateY(-4px) scale(1.03);
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   6. LORE & STATS SECTION
+   -------------------------------------------------------------------------- */
+.section-lore {
+  padding: 6rem 0;
+  position: relative;
+}
+
+.parchment-box {
+  background: var(--parchment-bg);
+  color: var(--parchment-text);
+  padding: 3rem 2.5rem;
+  border-radius: 6px;
+  border: 8px solid var(--iron-dark);
+  outline: 2px solid var(--gold-primary);
+  box-shadow: var(--shadow-castle);
+  position: relative;
+  margin-bottom: 4rem;
+  background-image: radial-gradient(#d4c498 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.parchment-box::before {
+  content: '⚜';
+  font-family: var(--font-heading);
+  color: var(--gold-bright);
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  background: var(--crimson-royal);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid var(--gold-primary);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+}
+
+.lore-title {
+  color: var(--crimson-royal);
+  font-family: var(--font-title);
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+  text-shadow: none;
+}
+
+.lore-text {
+  font-size: 1.25rem;
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  line-height: 1.9;
+  font-weight: 600;
+}
+
+/* Stats Counter Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.8rem;
+}
+
+.stat-card {
+  background: var(--bg-stone-card);
+  border: 2px solid var(--iron-border);
+  border-top: 3px solid var(--gold-primary);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border-radius: 6px;
+  transition: var(--transition-smooth);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--gold-bright);
+  box-shadow: 0 12px 30px rgba(212, 175, 55, 0.25);
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-family: var(--font-title);
+  font-size: 2.2rem;
+  color: var(--gold-bright);
+  margin-bottom: 0.2rem;
+}
+
+.stat-label {
+  font-family: var(--font-medieval);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   7. HIGH COMMAND / LEADERSHIP SECTION
+   -------------------------------------------------------------------------- */
+.section-leadership {
+  padding: 6rem 0;
+  background: radial-gradient(circle at center, rgba(20, 17, 14, 0.8) 0%, var(--bg-dark-base) 100%);
+}
+
+.leadership-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.2rem;
+}
+
+.leader-card {
+  background: var(--bg-stone-card);
+  border: 2px solid var(--iron-border);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  transition: var(--transition-smooth);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+}
+
+.leader-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--crimson-royal), var(--gold-bright), var(--crimson-royal));
+}
+
+.leader-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--gold-primary);
+  box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3);
+}
+
+.leader-img-wrap {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+}
+
+.leader-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.leader-card:hover .leader-img {
+  transform: scale(1.08);
+}
+
+.leader-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: var(--iron-dark);
+  border: 2px solid var(--gold-primary);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+}
+
+.leader-content {
+  padding: 1.8rem;
+  text-align: center;
+}
+
+.leader-role {
+  font-family: var(--font-medieval);
+  color: var(--gold-bright);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.4rem;
+}
+
+.leader-name {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.3rem;
+}
+
+.leader-title {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.leader-motto {
+  font-size: 1rem;
+  color: var(--text-gold);
+  border-top: 1px dashed var(--iron-border);
+  padding-top: 0.8rem;
+  font-style: italic;
+}
+
+/* --------------------------------------------------------------------------
+   8. KNIGHT ROSTER SECTION
+   -------------------------------------------------------------------------- */
+.section-knights {
+  padding: 6rem 0;
+}
+
+/* Search & Filter Controls */
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  background: var(--bg-stone-card);
+  padding: 1.2rem 1.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--iron-border);
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  min-width: 260px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.8rem 1.2rem 0.8rem 2.8rem;
+  background: var(--bg-stone-dark);
+  border: 1px solid var(--iron-border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  transition: var(--transition-smooth);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  background: var(--bg-stone-dark);
+  border: 1px solid var(--iron-border);
+  color: var(--text-muted);
+  font-family: var(--font-medieval);
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-size: 0.9rem;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: var(--crimson-royal);
+  color: var(--gold-bright);
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 10px var(--crimson-glow);
+}
+
+/* Knight Cards Grid */
+.knights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.8rem;
+}
+
+.knight-card {
+  background: var(--bg-stone-card);
+  border: 2px solid var(--iron-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  position: relative;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+}
+
+.knight-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: var(--gold-bright);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.25);
+}
+
+.knight-avatar-wrap {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 1.2rem;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(135deg, var(--gold-primary), var(--crimson-royal));
+  box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+}
+
+.knight-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.knight-name {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  color: #ffffff;
+  margin-bottom: 0.2rem;
+}
+
+.knight-nickname {
+  font-family: var(--font-medieval);
+  font-size: 0.85rem;
+  color: var(--gold-bright);
+  margin-bottom: 0.6rem;
+}
+
+.knight-squad {
+  display: inline-block;
+  background: var(--bg-stone-light);
+  border: 1px solid var(--iron-border);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.8rem;
+  border-radius: 12px;
+  margin-bottom: 0.8rem;
+}
+
+.knight-motto {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-style: italic;
+}
+
+/* --------------------------------------------------------------------------
+   9. QUEST ARCHIVES (GALLERY SECTION)
+   -------------------------------------------------------------------------- */
+.section-gallery {
+  padding: 6rem 0;
+  background: var(--bg-stone-dark);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.8rem;
+}
+
+.gallery-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--iron-border);
+  height: 260px;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+}
+
+.gallery-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.gallery-card:hover img {
+  transform: scale(1.1);
+}
+
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 20%, rgba(12, 10, 8, 0.95) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  opacity: 0.9;
+  transition: var(--transition-smooth);
+}
+
+.gallery-card:hover .gallery-overlay {
+  opacity: 1;
+  background: linear-gradient(180deg, rgba(122, 28, 28, 0.3) 0%, rgba(12, 10, 8, 0.98) 100%);
+}
+
+.gallery-category {
+  font-family: var(--font-medieval);
+  font-size: 0.8rem;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.gallery-title {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: #ffffff;
+  margin-bottom: 0.4rem;
+}
+
+.gallery-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   10. HALL OF HONORS (ACHIEVEMENTS SECTION)
+   -------------------------------------------------------------------------- */
+.section-achievements {
+  padding: 6rem 0;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.achieve-card {
+  background: var(--bg-stone-card);
+  border: 2px solid var(--iron-border);
+  padding: 2.2rem 1.5rem;
+  text-align: center;
+  border-radius: 8px;
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.achieve-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--gold-primary);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+}
+
+.achieve-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));
+}
+
+.achieve-year {
+  display: inline-block;
+  background: var(--crimson-royal);
+  color: var(--gold-bright);
+  font-family: var(--font-medieval);
+  font-size: 0.8rem;
+  padding: 0.2rem 0.8rem;
+  border-radius: 10px;
+  margin-bottom: 0.8rem;
+}
+
+.achieve-title {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: #ffffff;
+  margin-bottom: 0.6rem;
+}
+
+.achieve-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   11. SCROLL OF WORDS (TESTIMONIALS SECTION)
+   -------------------------------------------------------------------------- */
+.section-testimonials {
+  padding: 6rem 0;
+  background: var(--bg-stone-dark);
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.2rem;
+}
+
+.test-card {
+  background: var(--parchment-bg);
+  color: var(--parchment-text);
+  padding: 2.2rem 1.8rem;
+  border-radius: 6px;
+  border: 4px solid var(--iron-dark);
+  box-shadow: var(--shadow-castle);
+  position: relative;
+}
+
+.test-quote {
+  font-size: 1.15rem;
+  font-style: italic;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.test-author {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.test-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--crimson-royal);
+}
+
+.test-name {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--crimson-royal);
+}
+
+.test-role {
+  font-family: var(--font-medieval);
+  font-size: 0.8rem;
+  color: #594a38;
+}
+
+/* --------------------------------------------------------------------------
+   12. CALL TO ACTION & FOOTER
+   -------------------------------------------------------------------------- */
+.section-cta {
+  padding: 6rem 0;
+  text-align: center;
+  background: radial-gradient(circle at center, rgba(122, 28, 28, 0.5) 0%, var(--bg-dark-base) 90%);
+}
+
+.cta-title {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  margin-bottom: 1rem;
+}
+
+.cta-subtitle {
+  font-family: var(--font-medieval);
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  margin-bottom: 2.5rem;
+}
+
+.footer {
+  background: #080605;
+  border-top: 3px solid var(--iron-border);
+  padding: 4rem 0 2rem;
+  text-align: center;
+}
+
+.footer-crest {
+  width: 70px;
+  height: 70px;
+  fill: var(--gold-bright);
+  margin-bottom: 1rem;
+}
+
+.footer-title {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  color: var(--gold-bright);
+  margin-bottom: 0.2rem;
+}
+
+.footer-school {
+  font-family: var(--font-medieval);
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  list-style: none;
+  margin-bottom: 2rem;
+}
+
+.footer-copy {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--iron-border);
+  padding-top: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   13. MODAL & LIGHTBOX SYSTEM
+   -------------------------------------------------------------------------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: var(--bg-stone-card);
+  border: 3px solid var(--gold-primary);
+  border-radius: 8px;
+  max-width: 600px;
+  width: 100%;
+  padding: 2.5rem;
+  position: relative;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.modal-backdrop.active .modal-content {
+  transform: scale(1);
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: var(--gold-bright);
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   14. RESPONSIVE BREAKPOINTS
+   -------------------------------------------------------------------------- */
+@media (max-width: 1140px) {
+  .brand-title { font-size: 0.9rem; }
+  .nav-links { gap: 0.7rem; }
+  .nav-link { font-size: 0.72rem; letter-spacing: 0; }
+}
+
+@media (max-width: 992px) {
+  .hero-title {
+    font-size: 3.5rem;
+  }
+  .torch-container {
+    display: none;
+  }
+  /* Collapse nav to hamburger at 992px for cleaner look */
+  .nav-links {
+    position: fixed;
+    top: 76px;
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - 76px);
+    background: rgba(12, 10, 8, 0.98);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    transition: left 0.4s ease;
+    border-top: 2px solid var(--iron-border);
+    backdrop-filter: blur(12px);
+  }
+  .nav-links.active { left: 0; }
+  .nav-link { font-size: 1.2rem; letter-spacing: 2px; }
+  .hamburger { display: flex !important; }
+}
+
+@media (max-width: 768px) {
+
+  .hero {
+    padding-top: 100px;
+  }
+
+  .parchment-box {
+    padding: 2rem 1.2rem;
+  }
+
+  .filter-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-buttons {
+    justify-content: center;
+  }
+}
+
+/* Prefers Reduced Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   15. FRONTEND-DESIGN PREMIUM VISUAL STYLES
+   -------------------------------------------------------------------------- */
+
+/* Royal Motto Banner Ribbon in Hero */
+.motto-ribbon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #571212 0%, var(--crimson-royal) 50%, #420d0d 100%);
+  color: var(--gold-bright);
+  font-family: var(--font-medieval);
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  padding: 0.8rem 2.2rem;
+  border-top: 2px solid var(--gold-bright);
+  border-bottom: 2px solid var(--gold-bright);
+  margin: 1.2rem auto 2.5rem;
+  position: relative;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  max-width: 90%;
+}
+
+.motto-ribbon::before,
+.motto-ribbon::after {
+  content: '✦';
+  color: var(--gold-bright);
+  font-size: 1.1rem;
+  margin: 0 0.8rem;
+}
+
+/* Crest Glow Frame */
+.hero-crest-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.crest-frame-glow {
+  position: absolute;
+  inset: -15px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(247, 208, 112, 0.35) 0%, rgba(122, 28, 28, 0.2) 60%, transparent 80%);
+  filter: blur(10px);
+  animation: crestPulse 4s infinite ease-in-out;
+  pointer-events: none;
+}
+
+/* Metallic Gold Foil Button */
+.btn-medieval.gold-foil-btn {
+  background: linear-gradient(135deg, var(--crimson-royal) 0%, #4a0c0c 40%, var(--crimson-bright) 100%);
+  border: 2px solid var(--gold-primary);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.8), inset 0 0 12px rgba(247, 208, 112, 0.4);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-medieval.gold-foil-btn:hover {
+  transform: translateY(-5px) scale(1.04);
+  border-color: #ffffff;
+  box-shadow: 0 12px 35px rgba(212, 175, 55, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+/* Wax Seal Badge on Parchment Box */
+.parchment-box {
+  position: relative;
+  overflow: visible;
+}
+
+.wax-seal-badge {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.8));
+  z-index: 10;
+  transition: transform 0.3s ease;
+}
+
+.wax-seal-badge:hover {
+  transform: translateX(-50%) scale(1.15) rotate(10deg);
+}
+
+.wax-seal-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* SVG Icon & Extra Component Styles */
+.svg-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  stroke: currentColor;
+}
+
+.btn-svg-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.4rem;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sound-toggle-btn {
+  background: var(--bg-stone-dark);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-bright);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.sound-toggle-btn:hover {
+  background: var(--crimson-royal);
+  transform: scale(1.1);
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+.sound-toggle-btn.muted {
+  opacity: 0.5;
+  border-color: var(--iron-border);
+  color: var(--text-muted);
+}
+
+/* Schedule & Duty Roster Section */
+.section-schedule {
+  padding: 6rem 0;
+  background: radial-gradient(circle at center, rgba(20, 17, 14, 0.9) 0%, var(--bg-dark-base) 100%);
+}
+
+.schedule-tab-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.schedule-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 2rem;
+  background: var(--bg-stone-card);
+  border: 2px solid var(--iron-border);
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.schedule-tab-btn:hover,
+.schedule-tab-btn.active {
+  background: var(--crimson-royal);
+  color: var(--gold-bright);
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 15px var(--crimson-glow);
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.8rem;
+}
+
+.schedule-card {
+  background: var(--parchment-bg);
+  color: var(--parchment-text);
+  padding: 1.8rem 1.4rem;
+  border-radius: 6px;
+  border: 4px solid var(--iron-dark);
+  box-shadow: var(--shadow-castle);
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.schedule-card.active-today {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+  transform: translateY(-4px);
+}
+
+.schedule-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--crimson-royal);
+  padding-bottom: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.schedule-day-title {
+  font-family: var(--font-title);
+  color: var(--crimson-royal);
+  font-size: 1.4rem;
+}
+
+.today-badge {
+  background: var(--crimson-royal);
+  color: var(--gold-bright);
+  font-family: var(--font-medieval);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 10px;
+}
+
+.subject-list, .duty-list {
+  list-style: none;
+}
+
+.subject-item {
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px dashed rgba(42, 34, 25, 0.2);
+}
+
+.subject-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.subject-time {
+  font-family: var(--font-medieval);
+  font-size: 0.85rem;
+  color: #594a38;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.subject-time svg {
+  width: 14px;
+  height: 14px;
+}
+
+.subject-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #1a140d;
+}
+
+.subject-mentor {
+  font-size: 0.85rem;
+  color: #6e5e49;
+  font-style: italic;
+}
+
+.duty-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed rgba(42, 34, 25, 0.2);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.duty-item:last-child {
+  border-bottom: none;
+}
+
+.duty-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--crimson-royal);
+}
+
+/* RPG Stats Modal Polish */
+.knight-modal-content {
+  text-align: center;
+}
+
+.modal-knight-img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 3px solid var(--gold-bright);
+  margin-bottom: 0.8rem;
+  object-fit: cover;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+}
+
+.modal-knight-name {
+  font-family: var(--font-title);
+  color: var(--gold-bright);
+  font-size: 1.6rem;
+  margin-bottom: 0.2rem;
+}
+
+.modal-knight-nick {
+  font-family: var(--font-medieval);
+  color: var(--gold-primary);
+  font-size: 1.05rem;
+  margin-bottom: 0.6rem;
+}
+
+.modal-knight-squad {
+  display: inline-block;
+  background: var(--crimson-royal);
+  color: white;
+  padding: 0.3rem 1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.modal-knight-motto {
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--text-primary);
+  border-top: 1px solid var(--iron-border);
+  padding-top: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.rpg-stats-container {
+  background: var(--bg-stone-dark);
+  padding: 1.2rem;
+  border-radius: 6px;
+  border: 1px solid var(--iron-border);
+  text-align: left;
+}
+
+.rpg-stats-title {
+  font-family: var(--font-heading);
+  color: var(--gold-bright);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.rpg-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.rpg-stat-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  width: 140px;
+}
+
+.rpg-bar-track {
+  flex: 1;
+  height: 10px;
+  background: var(--bg-stone-light);
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--iron-border);
+}
+
+.rpg-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--crimson-royal), var(--gold-bright));
+  border-radius: 5px;
+  transition: width 0.8s ease;
+}
+
+.rpg-stat-val {
+  font-family: var(--font-medieval);
+  color: var(--gold-bright);
+  font-size: 0.85rem;
+  width: 25px;
+  text-align: right;
+}
+
+
