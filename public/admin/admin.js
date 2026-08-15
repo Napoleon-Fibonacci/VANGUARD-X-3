@@ -1,3 +1,21 @@
+// Human label + placeholder per field. Key = raw field name, value = [label, placeholder].
+const FIELD_INFO = {
+  id: ['ID (unik)', 'contoh: knight-01 — huruf kecil, tanpa spasi'],
+  name: ['Nama', 'Nama lengkap ksatria/petinggi'],
+  role: ['Peran', 'contoh: Ketua Kelas'],
+  title: ['Gelar/Jabatan', 'contoh: Panglima Vanguard'],
+  motto: ['Motto', 'Kutipan singkat pribadi'],
+  badge: ['Ikon Lencana', 'nama ikon: crown, shield, scroll, dst (lihat daftar ikon di script.js)'],
+  avatar: ['URL Foto', 'https://... — link gambar avatar'],
+  nickname: ['Julukan', 'contoh: "Sang Penakluk"'],
+  squad: ['Pasukan', 'Garda Depan / Ordo Cendekia / Legiun Olahraga / Guild Seni'],
+  sort_order: ['Urutan Tampil', 'Angka — makin kecil makin di atas'],
+  title_: ['Judul Foto', ''],
+  category: ['Kategori', 'Event / Olahraga / Akademik / Kebersamaan'],
+  image: ['URL Gambar', 'https://... — link foto galeri'],
+  description: ['Deskripsi', 'Penjelasan singkat foto/momen ini']
+};
+
 const SCHEMAS = {
   leadership: ['id', 'name', 'role', 'title', 'motto', 'badge', 'avatar', 'sort_order'],
   knights: ['id', 'name', 'nickname', 'squad', 'role', 'motto', 'avatar', 'sort_order'], // rpg_stats edited raw
@@ -32,11 +50,30 @@ document.querySelectorAll('.tab-bar button').forEach(btn => {
   };
 });
 
+function fieldRow(field, tableKey) {
+  const key = (tableKey === 'gallery' && field === 'title') ? 'title_' : field;
+  const [label, hint] = FIELD_INFO[key] || [field, ''];
+  const readonly = field === 'id' && editingId ? 'readonly' : '';
+  return `<div class="admin-row" style="flex-direction:column;align-items:stretch;">
+    <label style="font-weight:600;">${label}</label>
+    <input name="${field}" placeholder="${hint}" ${readonly}>
+    ${hint ? `<small style="color:var(--text-muted);">${hint}</small>` : ''}
+  </div>`;
+}
+
 function renderForm() {
   const form = document.getElementById('itemForm');
-  form.innerHTML = SCHEMAS[currentTable].map(f =>
-    `<div class="admin-row"><label style="width:100px">${f}</label><input name="${f}" ${f === 'id' && editingId ? 'readonly' : ''}></div>`
-  ).join('') + (currentTable === 'knights' ? `<div class="admin-row"><label style="width:100px">rpg_stats</label><textarea name="rpg_stats" placeholder='{"keberanian":80,"kecerdasan":80,"kreativitas":80,"ketangkasan":80}'></textarea></div>` : '');
+  const heading = { leadership: 'Data Petinggi', knights: 'Data Ksatria', gallery: 'Data Galeri' }[currentTable];
+  form.innerHTML =
+    `<h4 style="margin-bottom:.8rem;">${editingId ? 'Edit' : 'Tambah'} ${heading}</h4>` +
+    SCHEMAS[currentTable].map(f => fieldRow(f, currentTable)).join('') +
+    (currentTable === 'knights'
+      ? `<div class="admin-row" style="flex-direction:column;align-items:stretch;">
+           <label style="font-weight:600;">Statistik RPG</label>
+           <textarea name="rpg_stats" placeholder='{"keberanian":80,"kecerdasan":80,"kreativitas":80,"ketangkasan":80}'></textarea>
+           <small style="color:var(--text-muted);">Format JSON, nilai 0-100. Muncul di popup detail ksatria.</small>
+         </div>`
+      : '');
 }
 renderForm();
 
@@ -53,12 +90,14 @@ document.getElementById('saveBtn').onclick = async () => {
   if (!res.ok) return alert('Gagal simpan: ' + (await res.json()).error);
   editingId = null;
   form.reset();
+  renderForm();
   loadList();
 };
 
 document.getElementById('cancelBtn').onclick = () => {
   editingId = null;
   document.getElementById('itemForm').reset();
+  renderForm();
   document.getElementById('cancelBtn').style.display = 'none';
 };
 
