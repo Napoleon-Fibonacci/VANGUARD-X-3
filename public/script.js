@@ -145,61 +145,105 @@ function getMedievalSvg(iconKey, customClass = '') {
 function initHeroCanvas() {
   const canvas = document.getElementById('emberCanvas');
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) {
+    canvas.style.display = 'none';
+    return;
+  }
+
+  const ctx = canvas.getContext('2d', { alpha: true });
+  const isSmallScreen = window.innerWidth < 768;
+  const dpr = Math.min(window.devicePixelRatio || 1, isSmallScreen ? 1 : 1.5);
+
+  let cssW = window.innerWidth;
+  let cssH = window.innerHeight;
 
   function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    cssW = window.innerWidth;
+    cssH = window.innerHeight;
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    canvas.style.width = cssW + 'px';
+    canvas.style.height = cssH + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resizeCanvas, 200);
+  });
+
+  // Pre-rendered glow sprite (replaces per-particle shadowBlur, which forces
+  // a full-canvas repaint pass on every draw call).
+  const spriteSize = 24;
+  const sprite = document.createElement('canvas');
+  sprite.width = spriteSize;
+  sprite.height = spriteSize;
+  const sctx = sprite.getContext('2d');
+  const grad = sctx.createRadialGradient(
+    spriteSize / 2, spriteSize / 2, 0,
+    spriteSize / 2, spriteSize / 2, spriteSize / 2
+  );
+  grad.addColorStop(0, 'hsla(30, 100%, 65%, 0.9)');
+  grad.addColorStop(0.5, 'hsla(20, 100%, 50%, 0.4)');
+  grad.addColorStop(1, 'hsla(20, 100%, 50%, 0)');
+  sctx.fillStyle = grad;
+  sctx.fillRect(0, 0, spriteSize, spriteSize);
 
   const particles = [];
-  const particleCount = Math.min(window.innerWidth / 15, 60);
+  const particleCount = isSmallScreen ? 18 : Math.min(Math.round(cssW / 22), 40);
 
   class Ember {
-    constructor() {
-      this.reset();
-    }
+    constructor() { this.reset(); }
     reset() {
-      this.x = Math.random() * canvas.width;
-      this.y = canvas.height + Math.random() * 50;
-      this.size = Math.random() * 3 + 1;
-      this.speedY = Math.random() * 1.5 + 0.5;
-      this.speedX = (Math.random() - 0.5) * 0.8;
-      this.opacity = Math.random() * 0.8 + 0.2;
-      this.hue = Math.random() * 30 + 15;
+      this.x = Math.random() * cssW;
+      this.y = cssH + Math.random() * 50;
+      this.size = Math.random() * 10 + 8;
+      this.speedY = Math.random() * 1.2 + 0.4;
+      this.speedX = (Math.random() - 0.5) * 0.6;
+      this.opacity = Math.random() * 0.7 + 0.2;
     }
     update() {
       this.y -= this.speedY;
       this.x += this.speedX;
-      this.opacity -= 0.003;
-      if (this.y < -10 || this.opacity <= 0) {
-        this.reset();
-      }
+      this.opacity -= 0.0025;
+      if (this.y < -20 || this.opacity <= 0) this.reset();
     }
     draw() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(${this.hue}, 100%, 55%, ${this.opacity})`;
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = `hsl(${this.hue}, 100%, 50%)`;
-      ctx.fill();
+      ctx.globalAlpha = this.opacity;
+      ctx.drawImage(sprite, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
     }
   }
 
-  for (let i = 0; i < particleCount; i++) {
-    particles.push(new Ember());
-  }
+  for (let i = 0; i < particleCount; i++) particles.push(new Ember());
+
+  let running = true;
+  let rafId = null;
 
   function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-      p.update();
-      p.draw();
-    });
-    requestAnimationFrame(animate);
+    if (!running) return;
+    ctx.clearRect(0, 0, cssW, cssH);
+    particles.forEach(p => { p.update(); p.draw(); });
+    ctx.globalAlpha = 1;
+    rafId = requestAnimationFrame(animate);
   }
+
+  // Only animate while hero is actually visible on screen.
+  const heroSection = document.getElementById('hero');
+  if ('IntersectionObserver' in window && heroSection) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        running = entry.isIntersecting;
+        if (running && !rafId) animate();
+        if (!running && rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      });
+    }, { threshold: 0 });
+    io.observe(heroSection);
+  }
+
   animate();
 }
 
@@ -614,25 +658,47 @@ function initMedievalAudio() {
    7. 3D CARD TILT MICRO-INTERACTION (FRONTEND-DESIGN SPECIAL)
    -------------------------------------------------------------------------- */
 function setup3DCardsTilt() {
-  const tiltCards = document.querySelectorAll('.knight-card');
+  const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!canHover || reduceMotion) return; // skip touch/coarse pointers and reduced-motion users
 
-  tiltCards.forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = (centerY - y) / 15;
-      const rotateY = (x - centerX) / 15;
+  // Delegate one listener instead of one per card; throttle writes to one per frame.
+  const grid = document.getElementById('knightsGrid');
+  if (!grid) return;
 
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px) scale(1.02)`;
-    });
+  let pendingCard = null;
+  let pendingX = 0, pendingY = 0;
+  let rafId = null;
 
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px) scale(1)';
-    });
+  function applyTilt() {
+    rafId = null;
+    if (!pendingCard) return;
+    const rect = pendingCard.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (centerY - pendingY) / 15;
+    const rotateY = (pendingX - centerX) / 15;
+    pendingCard.style.willChange = 'transform';
+    pendingCard.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px) scale(1.02)`;
+  }
+
+  grid.addEventListener('mousemove', (e) => {
+    const card = e.target.closest('.knight-card');
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    pendingCard = card;
+    pendingX = e.clientX - rect.left;
+    pendingY = e.clientY - rect.top;
+    if (!rafId) rafId = requestAnimationFrame(applyTilt);
   });
+
+  grid.addEventListener('mouseleave', (e) => {
+    const card = e.target.closest && e.target.closest('.knight-card');
+    if (card) {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px) scale(1)';
+      card.style.willChange = 'auto';
+    }
+  }, true);
 }
 
 function playFanfareSound() {
@@ -665,4 +731,3 @@ function playFanfareSound() {
     // Ignore audio autoplay policies if user has not interacted yet
   }
 }
-

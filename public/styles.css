@@ -6,7 +6,8 @@
 /* --------------------------------------------------------------------------
    1. GOOGLE FONTS & CSS VARIABLES
    -------------------------------------------------------------------------- */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=MedievalSharp&display=swap');
+/* Fonts loaded via <link> in <head> (preconnect + stylesheet) — no @import here.
+   @import blocks the critical rendering path and duplicates the font fetch. */
 
 :root {
   /* Color Palette - Royal Medieval */
@@ -406,6 +407,7 @@ a:hover {
   width: 60px;
   height: 100px;
   animation: torchFlicker 3s infinite ease-in-out;
+  will-change: transform, opacity, filter;
 }
 .torch svg {
   width: 100%;
@@ -422,6 +424,7 @@ a:hover {
   height: 130px;
   filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.6));
   animation: crestPulse 5s infinite ease-in-out;
+  will-change: transform, filter;
 }
 
 .hero-badge {
@@ -1623,5 +1626,3 @@ a:hover {
   width: 25px;
   text-align: right;
 }
-
-
