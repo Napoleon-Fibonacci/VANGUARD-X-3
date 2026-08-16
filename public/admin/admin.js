@@ -50,15 +50,59 @@ document.querySelectorAll('.tab-bar button').forEach(btn => {
   };
 });
 
+const IMAGE_FIELDS = ['avatar', 'image'];
+
 function fieldRow(field, tableKey) {
   const key = (tableKey === 'gallery' && field === 'title') ? 'title_' : field;
   const [label, hint] = FIELD_INFO[key] || [field, ''];
   const readonly = field === 'id' && editingId ? 'readonly' : '';
+
+  if (IMAGE_FIELDS.includes(field)) {
+    return `<div class="admin-row" style="flex-direction:column;align-items:stretch;">
+      <label style="font-weight:600;">${label}</label>
+      <input type="hidden" name="${field}">
+      <input type="file" accept="image/*" data-upload-for="${field}">
+      <img data-preview-for="${field}" style="max-width:120px;margin-top:.5rem;display:none;border-radius:4px;">
+      <small style="color:var(--text-muted);" data-status-for="${field}">Pilih foto dari komputer.</small>
+    </div>`;
+  }
+
   return `<div class="admin-row" style="flex-direction:column;align-items:stretch;">
     <label style="font-weight:600;">${label}</label>
     <input name="${field}" placeholder="${hint}" ${readonly}>
     ${hint ? `<small style="color:var(--text-muted);">${hint}</small>` : ''}
   </div>`;
+}
+
+async function uploadFile(file, statusEl) {
+  statusEl.textContent = 'Mengupload...';
+  const res = await fetch('/api/upload', {
+    method: 'POST',
+    headers: { 'Content-Type': file.type, 'x-file-name': file.name },
+    body: file
+  });
+  if (!res.ok) { statusEl.textContent = 'Gagal upload: ' + (await res.json()).error; return null; }
+  const { url } = await res.json();
+  statusEl.textContent = 'Terupload.';
+  return url;
+}
+
+function wireImageInputs(form) {
+  form.querySelectorAll('[data-upload-for]').forEach(fileInput => {
+    const field = fileInput.dataset.uploadFor;
+    const hidden = form.elements[field];
+    const preview = form.querySelector(`[data-preview-for="${field}"]`);
+    const status = form.querySelector(`[data-status-for="${field}"]`);
+    fileInput.onchange = async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const url = await uploadFile(file, status);
+      if (!url) return;
+      hidden.value = url;
+      preview.src = url;
+      preview.style.display = 'block';
+    };
+  });
 }
 
 function renderForm() {
@@ -74,6 +118,7 @@ function renderForm() {
            <small style="color:var(--text-muted);">Format JSON, nilai 0-100. Muncul di popup detail ksatria.</small>
          </div>`
       : '');
+  wireImageInputs(form);
 }
 renderForm();
 
@@ -122,6 +167,10 @@ async function loadList() {
     Object.keys(item).forEach(k => {
       const input = form.elements[k];
       if (input) input.value = k === 'rpg_stats' ? JSON.stringify(item[k]) : item[k];
+      if (IMAGE_FIELDS.includes(k) && item[k]) {
+        const preview = form.querySelector(`[data-preview-for="${k}"]`);
+        if (preview) { preview.src = item[k]; preview.style.display = 'block'; }
+      }
     });
     document.getElementById('cancelBtn').style.display = 'inline-block';
   });
