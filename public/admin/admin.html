@@ -6,21 +6,64 @@
 <link rel="stylesheet" href="/styles.css">
 <style>
   body { padding: 2rem; max-width: 900px; margin: 0 auto; opacity: 1; }
+
   .admin-box { background: var(--bg-stone-card); border: 1px solid var(--iron-border); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; }
-  .admin-row { display: flex; gap: .5rem; margin-bottom: .5rem; align-items: center; }
-  .admin-row input, .admin-row textarea { flex: 1; background: var(--bg-stone-dark); color: var(--text-primary); border: 1px solid var(--iron-border); padding: .5rem; font-family: var(--font-body); }
+  .admin-box h3 { font-family: var(--font-heading); color: var(--gold-bright); font-size: 1.1rem; margin-bottom: 1rem; }
+
+  .admin-row { display: flex; flex-direction: column; align-items: stretch; gap: .35rem; margin-bottom: 1.1rem; }
+  .admin-row label { font-family: var(--font-heading); font-weight: 700; color: var(--text-primary); font-size: .95rem; }
+  .admin-row input[type="text"],
+  .admin-row input:not([type]),
+  .admin-row textarea {
+    background: var(--bg-stone-dark); color: var(--text-primary);
+    border: 1px solid var(--iron-border); border-radius: 4px;
+    padding: .6rem .7rem; font-family: var(--font-body); font-size: 1rem;
+  }
+  .admin-row input:focus, .admin-row textarea:focus {
+    outline: none; border-color: var(--gold-primary); box-shadow: 0 0 8px var(--gold-glow);
+  }
+  .admin-row small { color: var(--text-muted); font-size: .82rem; }
+  .admin-row textarea { min-height: 70px; resize: vertical; }
+
+  /* File upload field */
+  .upload-field {
+    background: var(--bg-stone-dark); border: 1px dashed var(--iron-border);
+    border-radius: 6px; padding: 1rem; display: flex; gap: 1rem; align-items: center;
+  }
+  .upload-field input[type="file"] { color: var(--text-muted); font-size: .85rem; }
+  .upload-preview {
+    width: 64px; height: 64px; border-radius: 6px; object-fit: cover;
+    border: 2px solid var(--iron-border); display: none; flex-shrink: 0;
+  }
+  .upload-status { font-size: .82rem; color: var(--text-muted); }
+  .upload-status.uploading { color: var(--gold-primary); }
+  .upload-status.done { color: var(--gold-bright); }
+  .upload-status.error { color: var(--crimson-bright); }
+
+  .form-heading { font-family: var(--font-title); color: var(--gold-bright); font-size: 1.3rem; margin-bottom: 1.2rem; }
+
   .tab-bar { display: flex; gap: .5rem; margin-bottom: 1.5rem; }
-  .tab-bar button { padding: .5rem 1rem; cursor: pointer; }
-  #loginBox { max-width: 320px; margin: 4rem auto; text-align: center; }
+  .tab-bar button { padding: .6rem 1.2rem; cursor: pointer; }
+
+  #loginBox { max-width: 340px; margin: 4rem auto; text-align: center; }
+  #loginBox h2 { font-family: var(--font-heading); font-size: 1.6rem; margin-bottom: 1.5rem; }
+  #loginBox input { width: 100%; margin: 1rem 0; padding: .7rem; font-family: var(--font-body); border-radius: 4px; border: 1px solid var(--iron-border); }
+
   ul#list { list-style: none; }
-  ul#list li { border-bottom: 1px solid var(--iron-border); padding: .6rem 0; display: flex; justify-content: space-between; gap: 1rem; }
+  ul#list li { border-bottom: 1px solid var(--iron-border); padding: .6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  ul#list li span:first-child { font-family: var(--font-body); }
+  ul#list li small { color: var(--text-muted); }
+  ul#list button { margin-left: .4rem; padding: .35rem .8rem; cursor: pointer; }
+
+  #saveBtn, #cancelBtn { margin-top: .5rem; }
+  #cancelBtn { background: transparent; color: var(--text-muted); border: 1px solid var(--iron-border); padding: .6rem 1.4rem; border-radius: 4px; cursor: pointer; margin-left: .6rem; }
 </style>
 </head>
 <body>
 
 <div id="loginBox" class="admin-box">
   <h2>Admin Login</h2>
-  <input type="password" id="pw" placeholder="Password" style="width:100%;margin:1rem 0;padding:.6rem;">
+  <input type="password" id="pw" placeholder="Password">
   <button class="btn-medieval gold-foil-btn" id="loginBtn">Masuk</button>
   <p id="loginErr" style="color:var(--crimson-bright);"></p>
 </div>
@@ -34,7 +77,6 @@
   </div>
 
   <div class="admin-box">
-    <h3>Tambah / Edit</h3>
     <form id="itemForm"></form>
     <button class="btn-medieval gold-foil-btn" id="saveBtn">Simpan</button>
     <button id="cancelBtn" style="display:none;">Batal Edit</button>

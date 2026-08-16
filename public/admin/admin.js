@@ -6,13 +6,13 @@ const FIELD_INFO = {
   title: ['Gelar/Jabatan', 'contoh: Panglima Vanguard'],
   motto: ['Motto', 'Kutipan singkat pribadi'],
   badge: ['Ikon Lencana', 'nama ikon: crown, shield, scroll, dst (lihat daftar ikon di script.js)'],
-  avatar: ['URL Foto', 'https://... — link gambar avatar'],
+  avatar: ['Foto', 'Upload foto avatar dari komputer'],
   nickname: ['Julukan', 'contoh: "Sang Penakluk"'],
   squad: ['Pasukan', 'Garda Depan / Ordo Cendekia / Legiun Olahraga / Guild Seni'],
   sort_order: ['Urutan Tampil', 'Angka — makin kecil makin di atas'],
   title_: ['Judul Foto', ''],
   category: ['Kategori', 'Event / Olahraga / Akademik / Kebersamaan'],
-  image: ['URL Gambar', 'https://... — link foto galeri'],
+  image: ['Foto', 'Upload foto galeri dari komputer'],
   description: ['Deskripsi', 'Penjelasan singkat foto/momen ini']
 };
 
@@ -58,32 +58,42 @@ function fieldRow(field, tableKey) {
   const readonly = field === 'id' && editingId ? 'readonly' : '';
 
   if (IMAGE_FIELDS.includes(field)) {
-    return `<div class="admin-row" style="flex-direction:column;align-items:stretch;">
-      <label style="font-weight:600;">${label}</label>
+    return `<div class="admin-row">
+      <label>${label}</label>
       <input type="hidden" name="${field}">
-      <input type="file" accept="image/*" data-upload-for="${field}">
-      <img data-preview-for="${field}" style="max-width:120px;margin-top:.5rem;display:none;border-radius:4px;">
-      <small style="color:var(--text-muted);" data-status-for="${field}">Pilih foto dari komputer.</small>
+      <div class="upload-field">
+        <img class="upload-preview" data-preview-for="${field}">
+        <div>
+          <input type="file" accept="image/*" data-upload-for="${field}">
+          <div class="upload-status" data-status-for="${field}">Pilih foto dari komputer.</div>
+        </div>
+      </div>
     </div>`;
   }
 
-  return `<div class="admin-row" style="flex-direction:column;align-items:stretch;">
-    <label style="font-weight:600;">${label}</label>
+  return `<div class="admin-row">
+    <label>${label}</label>
     <input name="${field}" placeholder="${hint}" ${readonly}>
-    ${hint ? `<small style="color:var(--text-muted);">${hint}</small>` : ''}
+    ${hint ? `<small>${hint}</small>` : ''}
   </div>`;
 }
 
 async function uploadFile(file, statusEl) {
   statusEl.textContent = 'Mengupload...';
+  statusEl.className = 'upload-status uploading';
   const res = await fetch('/api/upload', {
     method: 'POST',
     headers: { 'Content-Type': file.type, 'x-file-name': file.name },
     body: file
   });
-  if (!res.ok) { statusEl.textContent = 'Gagal upload: ' + (await res.json()).error; return null; }
+  if (!res.ok) {
+    statusEl.textContent = 'Gagal upload: ' + (await res.json()).error;
+    statusEl.className = 'upload-status error';
+    return null;
+  }
   const { url } = await res.json();
   statusEl.textContent = 'Terupload.';
+  statusEl.className = 'upload-status done';
   return url;
 }
 
@@ -109,13 +119,13 @@ function renderForm() {
   const form = document.getElementById('itemForm');
   const heading = { leadership: 'Data Petinggi', knights: 'Data Ksatria', gallery: 'Data Galeri' }[currentTable];
   form.innerHTML =
-    `<h4 style="margin-bottom:.8rem;">${editingId ? 'Edit' : 'Tambah'} ${heading}</h4>` +
+    `<div class="form-heading">${editingId ? 'Edit' : 'Tambah'} ${heading}</div>` +
     SCHEMAS[currentTable].map(f => fieldRow(f, currentTable)).join('') +
     (currentTable === 'knights'
-      ? `<div class="admin-row" style="flex-direction:column;align-items:stretch;">
-           <label style="font-weight:600;">Statistik RPG</label>
+      ? `<div class="admin-row">
+           <label>Statistik RPG</label>
            <textarea name="rpg_stats" placeholder='{"keberanian":80,"kecerdasan":80,"kreativitas":80,"ketangkasan":80}'></textarea>
-           <small style="color:var(--text-muted);">Format JSON, nilai 0-100. Muncul di popup detail ksatria.</small>
+           <small>Format JSON, nilai 0-100. Muncul di popup detail ksatria.</small>
          </div>`
       : '');
   wireImageInputs(form);
