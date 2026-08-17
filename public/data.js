@@ -81,23 +81,23 @@ const VANGUARD_DATA = {
   dutyRoster: [
     {
       day: "Senin",
-      members: ["Muhammad Farhan", "Aditya Wardhana", "Anisa Rahmawati", "Bagas Kurnia", "Citra Dewi"]
+      members: ["Adinda", "Vira", "Athaya", "Sarah", "Dhiyaul", "Ramadhan", "Kaifa", "Nadia", "Mila"]
     },
     {
       day: "Selasa",
-      members: ["Aurelia Putri", "Dimas Anggara", "Eka Nurjanah", "Fajar Ramadan", "Gita Gutawa"]
+      members: ["Zahwa", "Andiani", "Humaira", "Calista", "Rifky", "Fitria", "Novia", "Alif", "Fajar"]
     },
     {
       day: "Rabu",
-      members: ["Nabila Zahra", "Davin Pratama", "Rian Hidayat", "Aditya Wardhana", "Anisa Rahmawati"]
+      members: ["Aditya", "Syahrini", "Azril", "Sapril", "Elsa", "Radiza", "Kamila", "Zami", "Rehan"]
     },
     {
       day: "Kamis",
-      members: ["Bagas Kurnia", "Citra Dewi", "Dimas Anggara", "Eka Nurjanah", "Fajar Ramadan"]
+      members: ["Wildan", "Andika", "Sheril", "Desta", "Rescha", "Hernila", "Aqna", "Irgi", "Afsal"]
     },
     {
       day: "Jumat",
-      members: ["Gita Gutawa", "Muhammad Farhan", "Aurelia Putri", "Nabila Zahra", "Davin Pratama"]
+      members: ["Aljia", "Rosa", "Azzahra", "Risti", "Gibran", "Raditya", "Khansa", "Keysha", "Lukman"]
     }
   ],
 
