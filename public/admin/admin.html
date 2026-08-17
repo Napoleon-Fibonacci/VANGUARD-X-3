@@ -96,6 +96,29 @@
     box-shadow: 0 0 8px var(--gold-glow);
   }
 
+  /* RPG stat sliders */
+  .rpg-slider-block {
+    background: var(--bg-stone-dark); border: 1px solid var(--iron-border); border-radius: 6px;
+    padding: 1rem 1.2rem;
+  }
+  .rpg-slider-row { display: flex; align-items: center; gap: .8rem; margin-bottom: .9rem; }
+  .rpg-slider-label { width: 150px; font-size: .85rem; color: var(--text-muted); flex-shrink: 0; }
+  .rpg-slider {
+    flex: 1; height: 6px; border-radius: 3px; appearance: none;
+    background: linear-gradient(90deg, var(--crimson-royal), var(--gold-bright));
+    outline: none; cursor: pointer;
+  }
+  .rpg-slider::-webkit-slider-thumb {
+    appearance: none; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--gold-bright); border: 2px solid var(--crimson-royal); cursor: pointer;
+  }
+  .rpg-slider::-moz-range-thumb {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--gold-bright); border: 2px solid var(--crimson-royal); cursor: pointer;
+  }
+  .rpg-slider-val { width: 30px; text-align: right; font-family: var(--font-heading); color: var(--gold-bright); font-size: .9rem; }
+  #rpgRandomBtn { margin-top: .3rem; }
+
   .form-heading { font-family: var(--font-title); color: var(--gold-bright); font-size: 1.3rem; margin-bottom: 1.2rem; }
 
   .tab-bar { display: flex; gap: .5rem; margin-bottom: 1.5rem; }

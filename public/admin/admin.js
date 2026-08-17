@@ -17,7 +17,7 @@ const FIELD_INFO = {
 
 const SCHEMAS = {
   leadership: ['name', 'role', 'title', 'motto', 'badge', 'avatar', 'sort_order'],
-  knights: ['name', 'nickname', 'squad', 'role', 'motto', 'avatar', 'sort_order'], // rpg_stats edited raw
+  knights: ['name', 'nickname', 'role', 'motto', 'avatar', 'sort_order'], // rpg_stats edited via slider
   gallery: ['title', 'category', 'image', 'description', 'sort_order']
 };
 
@@ -70,7 +70,73 @@ document.querySelectorAll('.tab-bar button').forEach(btn => {
   };
 });
 
-const IMAGE_FIELDS = ['avatar', 'image'];
+const RPG_STAT_LABELS = {
+  keberanian: 'Keberanian (STR)',
+  kecerdasan: 'Kecerdasan (INT)',
+  kreativitas: 'Kreativitas (ART)',
+  ketangkasan: 'Ketangkasan (AGI)'
+};
+
+function rpgStatsRow() {
+  return `<div class="admin-row">
+    <label>Statistik RPG</label>
+    <input type="hidden" name="rpg_stats">
+    <div class="rpg-slider-block">
+      ${Object.entries(RPG_STAT_LABELS).map(([key, label]) => `
+        <div class="rpg-slider-row">
+          <span class="rpg-slider-label">${label}</span>
+          <input type="range" min="0" max="100" value="80" class="rpg-slider" data-stat="${key}">
+          <span class="rpg-slider-val" data-stat-val="${key}">80</span>
+        </div>
+      `).join('')}
+      <button type="button" id="rpgRandomBtn" class="filter-btn">🎲 Acak Statistik</button>
+    </div>
+    <small>Geser slider untuk atur nilai 0-100. Muncul di popup detail ksatria.</small>
+  </div>`;
+}
+
+function wireRpgSliders(form) {
+  const block = form.querySelector('.rpg-slider-block');
+  if (!block) return;
+  const hidden = form.elements.rpg_stats;
+
+  function syncHidden() {
+    const stats = {};
+    block.querySelectorAll('.rpg-slider').forEach(s => { stats[s.dataset.stat] = Number(s.value); });
+    hidden.value = JSON.stringify(stats);
+  }
+
+  block.querySelectorAll('.rpg-slider').forEach(slider => {
+    slider.oninput = () => {
+      block.querySelector(`[data-stat-val="${slider.dataset.stat}"]`).textContent = slider.value;
+      syncHidden();
+    };
+  });
+
+  block.querySelector('#rpgRandomBtn').onclick = () => {
+    block.querySelectorAll('.rpg-slider').forEach(s => {
+      const val = Math.floor(Math.random() * 51) + 50; // 50-100, biar tetap wajar
+      s.value = val;
+      block.querySelector(`[data-stat-val="${s.dataset.stat}"]`).textContent = val;
+    });
+    syncHidden();
+  };
+
+  syncHidden();
+}
+
+function setRpgSliders(form, stats) {
+  const block = form.querySelector('.rpg-slider-block');
+  if (!block || !stats) return;
+  block.querySelectorAll('.rpg-slider').forEach(s => {
+    const val = stats[s.dataset.stat];
+    if (val !== undefined) {
+      s.value = val;
+      block.querySelector(`[data-stat-val="${s.dataset.stat}"]`).textContent = val;
+    }
+  });
+  form.elements.rpg_stats.value = JSON.stringify(stats);
+}
 
 function fieldRow(field, tableKey) {
   const key = (tableKey === 'gallery' && field === 'title') ? 'title_' : field;
@@ -187,15 +253,10 @@ function renderForm() {
   form.innerHTML =
     `<div class="form-heading">${editingId ? 'Edit' : 'Tambah'} ${heading}</div>` +
     SCHEMAS[currentTable].map(f => fieldRow(f, currentTable)).join('') +
-    (currentTable === 'knights'
-      ? `<div class="admin-row">
-           <label>Statistik RPG</label>
-           <textarea name="rpg_stats" placeholder='{"keberanian":80,"kecerdasan":80,"kreativitas":80,"ketangkasan":80}'></textarea>
-           <small>Format JSON, nilai 0-100. Muncul di popup detail ksatria.</small>
-         </div>`
-      : '');
+    (currentTable === 'knights' ? rpgStatsRow() : '');
   wireImageInputs(form);
   wirePickers(form);
+  if (currentTable === 'knights') wireRpgSliders(form);
 }
 renderForm();
 
@@ -251,7 +312,7 @@ async function loadList() {
     const form = document.getElementById('itemForm');
     Object.keys(item).forEach(k => {
       const input = form.elements[k];
-      if (input) input.value = k === 'rpg_stats' ? JSON.stringify(item[k]) : item[k];
+      if (input && k !== 'rpg_stats') input.value = item[k];
       if (IMAGE_FIELDS.includes(k) && item[k]) {
         const preview = form.querySelector(`[data-preview-for="${k}"]`);
         if (preview) { preview.src = item[k]; preview.style.display = 'block'; }
@@ -265,6 +326,7 @@ async function loadList() {
         if (btn) btn.classList.add('active');
       }
     });
+    if (item.rpg_stats) setRpgSliders(form, item.rpg_stats);
     document.getElementById('cancelBtn').style.display = 'inline-block';
   });
 
