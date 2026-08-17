@@ -133,11 +133,32 @@ function getMedievalSvg(iconKey, customClass = '') {
 
     cleaning: `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 21h18M12 3v14M8 17h8"/>
+    </svg>`,
+
+    default_avatar: `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
     </svg>`
   };
 
   return icons[iconKey] || icons.shield;
 }
+
+/* --------------------------------------------------------------------------
+   0b. FALLBACK HELPERS — hindari render string kosong / tanda kutip kosong
+   -------------------------------------------------------------------------- */
+function hasText(v) {
+  return typeof v === 'string' && v.trim().length > 0;
+}
+
+// Placeholder avatar netral (inline SVG data URI) dipakai kalau field foto kosong
+const PLACEHOLDER_AVATAR = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <rect width="100" height="100" fill="#28211b"/>
+    <circle cx="50" cy="38" r="18" fill="#4a3e35"/>
+    <path d="M15 95c0-22 15-38 35-38s35 16 35 38" fill="#4a3e35"/>
+  </svg>
+`);
 
 /* --------------------------------------------------------------------------
    1. CANVAS TORCH EMBER PARTICLES (HERO SECTION)
@@ -268,14 +289,14 @@ function renderLeadership(leaders) {
   container.innerHTML = leaders.map(leader => `
     <div class="leader-card reveal">
       <div class="leader-img-wrap">
-        <img src="${leader.avatar}" alt="${leader.name}" class="leader-img" loading="lazy">
-        <div class="leader-badge">${getMedievalSvg(leader.badge)}</div>
+        <img src="${hasText(leader.avatar) ? leader.avatar : PLACEHOLDER_AVATAR}" alt="${leader.name || 'Petinggi'}" class="leader-img" loading="lazy">
+        ${hasText(leader.badge) ? `<div class="leader-badge">${getMedievalSvg(leader.badge)}</div>` : ''}
       </div>
       <div class="leader-content">
-        <div class="leader-role">${leader.role}</div>
-        <h3 class="leader-name">${leader.name}</h3>
-        <div class="leader-title">${leader.title}</div>
-        <div class="leader-motto">"${leader.motto}"</div>
+        ${hasText(leader.role) ? `<div class="leader-role">${leader.role}</div>` : ''}
+        <h3 class="leader-name">${leader.name || 'Tanpa Nama'}</h3>
+        ${hasText(leader.title) ? `<div class="leader-title">${leader.title}</div>` : ''}
+        ${hasText(leader.motto) ? `<div class="leader-motto">"${leader.motto}"</div>` : ''}
       </div>
     </div>
   `).join('');
@@ -291,12 +312,12 @@ function renderKnights(knights) {
   container.innerHTML = knights.map(knight => `
     <div class="knight-card reveal" data-knight-id="${knight.id}">
       <div class="knight-avatar-wrap">
-        <img src="${knight.avatar}" alt="${knight.name}" class="knight-avatar" loading="lazy">
+        <img src="${hasText(knight.avatar) ? knight.avatar : PLACEHOLDER_AVATAR}" alt="${knight.name || 'Ksatria'}" class="knight-avatar" loading="lazy">
       </div>
-      <h3 class="knight-name">${knight.name}</h3>
-      <div class="knight-nickname">"${knight.nickname}"</div>
-      <span class="knight-squad">${knight.squad}</span>
-      <div class="knight-motto">"${knight.motto}"</div>
+      <h3 class="knight-name">${knight.name || 'Tanpa Nama'}</h3>
+      ${hasText(knight.nickname) ? `<div class="knight-nickname">"${knight.nickname}"</div>` : ''}
+      ${hasText(knight.squad) ? `<span class="knight-squad">${knight.squad}</span>` : ''}
+      ${hasText(knight.motto) ? `<div class="knight-motto">"${knight.motto}"</div>` : ''}
     </div>
   `).join('');
 }
@@ -392,11 +413,11 @@ function renderGallery(items) {
   }
   container.innerHTML = items.map(item => `
     <div class="gallery-card reveal" data-gallery-id="${item.id}">
-      <img src="${item.image}" alt="${item.title}" loading="lazy">
+      <img src="${hasText(item.image) ? item.image : PLACEHOLDER_AVATAR}" alt="${item.title || 'Galeri'}" loading="lazy">
       <div class="gallery-overlay">
-        <span class="gallery-category">${item.category}</span>
-        <h3 class="gallery-title">${item.title}</h3>
-        <p class="gallery-desc">${item.description}</p>
+        ${hasText(item.category) ? `<span class="gallery-category">${item.category}</span>` : ''}
+        <h3 class="gallery-title">${item.title || 'Tanpa Judul'}</h3>
+        ${hasText(item.description) ? `<p class="gallery-desc">${item.description}</p>` : ''}
       </div>
     </div>
   `).join('');
@@ -422,10 +443,10 @@ function renderTestimonials(testimonials) {
     <div class="test-card reveal">
       <p class="test-quote">"${test.quote}"</p>
       <div class="test-author">
-        <img src="${test.avatar}" alt="${test.name}" class="test-avatar" loading="lazy">
+        <img src="${hasText(test.avatar) ? test.avatar : PLACEHOLDER_AVATAR}" alt="${test.name || ''}" class="test-avatar" loading="lazy">
         <div>
-          <div class="test-name">${test.name}</div>
-          <div class="test-role">${test.role}</div>
+          <div class="test-name">${test.name || ''}</div>
+          <div class="test-role">${test.role || ''}</div>
         </div>
       </div>
     </div>
@@ -440,11 +461,11 @@ function setupFiltersAndSearch(allKnights, allGallery) {
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       const term = e.target.value.toLowerCase().trim();
-      const filtered = allKnights.filter(k => 
-        k.name.toLowerCase().includes(term) ||
-        k.nickname.toLowerCase().includes(term) ||
-        k.squad.toLowerCase().includes(term) ||
-        k.role.toLowerCase().includes(term)
+      const filtered = allKnights.filter(k =>
+        (k.name || '').toLowerCase().includes(term) ||
+        (k.nickname || '').toLowerCase().includes(term) ||
+        (k.squad || '').toLowerCase().includes(term) ||
+        (k.role || '').toLowerCase().includes(term)
       );
       renderKnights(filtered);
       setupScrollReveal();
@@ -564,12 +585,11 @@ function setupModalSystem() {
         const stats = knight.rpgStats || { keberanian: 85, kecerdasan: 85, kreativitas: 85, ketangkasan: 85 };
         modalBody.innerHTML = `
           <div class="knight-modal-content">
-            <img src="${knight.avatar}" alt="${knight.name}" class="modal-knight-img">
-            <h2 class="modal-knight-name">${knight.name}</h2>
-            <p class="modal-knight-nick">"${knight.nickname}"</p>
-            <div class="modal-knight-squad">${knight.squad} • ${knight.role}</div>
-            
-            <p class="modal-knight-motto">"${knight.motto}"</p>
+            <img src="${hasText(knight.avatar) ? knight.avatar : PLACEHOLDER_AVATAR}" alt="${knight.name || 'Ksatria'}" class="modal-knight-img">
+            <h2 class="modal-knight-name">${knight.name || 'Tanpa Nama'}</h2>
+            ${hasText(knight.nickname) ? `<p class="modal-knight-nick">"${knight.nickname}"</p>` : ''}
+            ${(hasText(knight.squad) || hasText(knight.role)) ? `<div class="modal-knight-squad">${[knight.squad, knight.role].filter(hasText).join(' • ')}</div>` : ''}
+            ${hasText(knight.motto) ? `<p class="modal-knight-motto">"${knight.motto}"</p>` : ''}
 
             <div class="rpg-stats-container">
               <h4 class="rpg-stats-title">Atribut RPG Ksatria</h4>
@@ -621,10 +641,10 @@ function setupModalSystem() {
       if (item) {
         modalBody.innerHTML = `
           <div>
-            <img src="${item.image}" alt="${item.title}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 6px; border: 2px solid var(--gold-primary); margin-bottom: 1.2rem;">
-            <span style="font-family: var(--font-medieval); color: var(--gold-bright); font-size: 0.9rem; text-transform: uppercase;">${item.category}</span>
-            <h2 style="font-family: var(--font-heading); color: #ffffff; font-size: 1.8rem; margin: 0.4rem 0 0.8rem;">${item.title}</h2>
-            <p style="font-size: 1.1rem; color: var(--text-muted); line-height: 1.7;">${item.description}</p>
+            <img src="${hasText(item.image) ? item.image : PLACEHOLDER_AVATAR}" alt="${item.title || 'Galeri'}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 6px; border: 2px solid var(--gold-primary); margin-bottom: 1.2rem;">
+            ${hasText(item.category) ? `<span style="font-family: var(--font-medieval); color: var(--gold-bright); font-size: 0.9rem; text-transform: uppercase;">${item.category}</span>` : ''}
+            <h2 style="font-family: var(--font-heading); color: #ffffff; font-size: 1.8rem; margin: 0.4rem 0 0.8rem;">${item.title || 'Tanpa Judul'}</h2>
+            ${hasText(item.description) ? `<p style="font-size: 1.1rem; color: var(--text-muted); line-height: 1.7;">${item.description}</p>` : ''}
           </div>
         `;
         backdrop.classList.add('active');

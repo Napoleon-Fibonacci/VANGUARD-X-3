@@ -1626,3 +1626,13 @@ a:hover {
   width: 25px;
   text-align: right;
 }
+
+/* TAMBAHKAN ke public/styles.css — knight card tetap rapi walau field kosong */
+.knight-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 220px;
+}
+.knight-name { margin-top: .2rem; }
+.knight-squad { margin-top: auto; }
