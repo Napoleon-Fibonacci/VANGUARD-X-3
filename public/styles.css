@@ -1636,3 +1636,33 @@ a:hover {
 }
 .knight-name { margin-top: .2rem; }
 .knight-squad { margin-top: auto; }
+
+/* GANTI/TAMBAHKAN di public/styles.css, bagian .duty-item & .duty-icon */
+
+.duty-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed rgba(42, 34, 25, 0.2);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #1a140d;
+}
+
+.duty-item:last-child {
+  border-bottom: none;
+}
+
+.duty-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--crimson-royal);
+}
+
+/* Variasi warna icon berdasarkan urutan, biar tiap baris beda */
+.duty-item:nth-child(4n+1) .duty-icon { color: var(--crimson-royal); }
+.duty-item:nth-child(4n+2) .duty-icon { color: var(--gold-dark); }
+.duty-item:nth-child(4n+3) .duty-icon { color: #5a3a1a; }
+.duty-item:nth-child(4n+4) .duty-icon { color: #7a1c1c; }

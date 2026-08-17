@@ -359,6 +359,7 @@ function renderScheduleAndDuty(schedules, dutyRosters) {
 
   // 2. Render Duty Roster Tab Content
   function renderDutyTab() {
+    const dutyIcons = ['shield', 'swords', 'crown', 'scroll'];
     scheduleContainer.innerHTML = `
       <div class="schedule-grid">
         ${dutyRosters.map((duty, idx) => {
@@ -371,9 +372,9 @@ function renderScheduleAndDuty(schedules, dutyRosters) {
                 ${isToday ? '<span class="today-badge">Piket Hari Ini</span>' : ''}
               </div>
               <ul class="duty-list">
-                ${duty.members.map(member => `
+                ${duty.members.map((member, i) => `
                   <li class="duty-item">
-                    ${getMedievalSvg('shield', 'duty-icon')} <span>${member}</span>
+                    ${getMedievalSvg(dutyIcons[i % dutyIcons.length], 'duty-icon')} <span>${member}</span>
                   </li>
                 `).join('')}
               </ul>
@@ -670,15 +671,8 @@ function initMedievalAudio() {
       if (soundEnabled) playFanfareSound();
     });
 
-    // Tahan tombol 1.2 detik -> gerbang admin
-    let holdTimer = null;
-    const startHold = () => { holdTimer = setTimeout(() => { window.location.href = '/admin'; }, 1200); };
-    const cancelHold = () => { clearTimeout(holdTimer); };
-    soundBtn.addEventListener('mousedown', startHold);
-    soundBtn.addEventListener('touchstart', startHold, { passive: true });
-    ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(evt =>
-      soundBtn.addEventListener(evt, cancelHold)
-    );
+    // Double-click -> gerbang admin
+    soundBtn.addEventListener('dblclick', () => { window.location.href = '/admin'; });
   }
 
   setup3DCardsTilt();
