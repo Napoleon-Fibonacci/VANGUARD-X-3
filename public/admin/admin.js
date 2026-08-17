@@ -70,6 +70,8 @@ document.querySelectorAll('.tab-bar button').forEach(btn => {
   };
 });
 
+const IMAGE_FIELDS = ['avatar', 'image'];
+
 const RPG_STAT_LABELS = {
   keberanian: 'Keberanian (STR)',
   kecerdasan: 'Kecerdasan (INT)',
