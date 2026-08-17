@@ -1,6 +1,5 @@
 // Human label + placeholder per field. Key = raw field name, value = [label, placeholder].
 const FIELD_INFO = {
-  id: ['ID (unik)', 'contoh: knight-01 — huruf kecil, tanpa spasi'],
   name: ['Nama', 'Nama lengkap ksatria/petinggi'],
   role: ['Peran', 'contoh: Ketua Kelas'],
   title: ['Gelar/Jabatan', 'contoh: Panglima Vanguard'],
@@ -9,7 +8,7 @@ const FIELD_INFO = {
   avatar: ['Foto', 'Upload foto avatar dari komputer'],
   nickname: ['Julukan', 'contoh: "Sang Penakluk"'],
   squad: ['Pasukan', 'Garda Depan / Ordo Cendekia / Legiun Olahraga / Guild Seni'],
-  sort_order: ['Urutan Tampil', 'Angka — makin kecil makin di atas'],
+  sort_order: ['Urutan Tampil', ''],
   title_: ['Judul Foto', ''],
   category: ['Kategori', 'Event / Olahraga / Akademik / Kebersamaan'],
   image: ['Foto', 'Upload foto galeri dari komputer'],
@@ -17,10 +16,14 @@ const FIELD_INFO = {
 };
 
 const SCHEMAS = {
-  leadership: ['id', 'name', 'role', 'title', 'motto', 'badge', 'avatar', 'sort_order'],
-  knights: ['id', 'name', 'nickname', 'squad', 'role', 'motto', 'avatar', 'sort_order'], // rpg_stats edited raw
-  gallery: ['id', 'title', 'category', 'image', 'description', 'sort_order']
+  leadership: ['name', 'role', 'title', 'motto', 'badge', 'avatar', 'sort_order'],
+  knights: ['name', 'nickname', 'squad', 'role', 'motto', 'avatar', 'sort_order'], // rpg_stats edited raw
+  gallery: ['title', 'category', 'image', 'description', 'sort_order']
 };
+
+function slugify(str) {
+  return str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'item';
+}
 
 let currentTable = 'leadership';
 let editingId = null;
@@ -55,7 +58,6 @@ const IMAGE_FIELDS = ['avatar', 'image'];
 function fieldRow(field, tableKey) {
   const key = (tableKey === 'gallery' && field === 'title') ? 'title_' : field;
   const [label, hint] = FIELD_INFO[key] || [field, ''];
-  const readonly = field === 'id' && editingId ? 'readonly' : '';
 
   if (IMAGE_FIELDS.includes(field)) {
     return `<div class="admin-row">
@@ -71,9 +73,17 @@ function fieldRow(field, tableKey) {
     </div>`;
   }
 
+  if (field === 'sort_order') {
+    return `<div class="admin-row">
+      <label>${label}</label>
+      <input type="number" name="${field}" value="0" step="1">
+      <small>Menentukan posisi tampil di halaman utama — angka kecil tampil duluan. Boleh dibiarkan 0.</small>
+    </div>`;
+  }
+
   return `<div class="admin-row">
     <label>${label}</label>
-    <input name="${field}" placeholder="${hint}" ${readonly}>
+    <input name="${field}" placeholder="${hint}">
     ${hint ? `<small>${hint}</small>` : ''}
   </div>`;
 }
@@ -135,11 +145,19 @@ renderForm();
 document.getElementById('saveBtn').onclick = async () => {
   const form = document.getElementById('itemForm');
   const body = {};
-  new FormData(form).forEach((v, k) => body[k] = k === 'sort_order' ? Number(v) : v);
+  new FormData(form).forEach((v, k) => {
+    if (v === '' && editingId) return; // kosong saat edit = jangan timpa nilai lama
+    body[k] = k === 'sort_order' ? Number(v || 0) : v;
+  });
   if (body.rpg_stats) body.rpg_stats = JSON.parse(body.rpg_stats || '{}');
 
   const method = editingId ? 'PUT' : 'POST';
-  if (editingId) body.id = editingId;
+  if (editingId) {
+    body.id = editingId;
+  } else {
+    const nameSource = body.name || body.title || 'item';
+    body.id = `${slugify(nameSource)}-${Date.now().toString(36)}`;
+  }
 
   const res = await fetch(`/api/${currentTable}`, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   if (!res.ok) return alert('Gagal simpan: ' + (await res.json()).error);
@@ -161,7 +179,7 @@ async function loadList() {
   const items = await res.json();
   document.getElementById('list').innerHTML = items.map(item => `
     <li>
-      <span>${item.name || item.title} <small>(${item.id})</small></span>
+      <span>${item.name || item.title || '(tanpa nama)'} <small>(${item.id})</small></span>
       <span>
         <button data-edit="${item.id}">Edit</button>
         <button data-del="${item.id}">Hapus</button>
