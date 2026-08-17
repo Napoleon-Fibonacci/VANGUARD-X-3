@@ -95,13 +95,21 @@
   #loginBox .btn-medieval { width: 100%; justify-content: center; margin-top: 1.4rem; }
   #loginErr { margin-top: 1rem; min-height: 1.2em; font-family: var(--font-medieval); font-size: .9rem; }
 
-  .back-home {
-    display: inline-flex; align-items: center; gap: .4rem;
-    color: var(--text-muted); font-family: var(--font-heading); font-size: .9rem;
-    margin-bottom: 1.2rem;
+  #loginBox .back-home {
+    display: inline-block; margin-top: 1.2rem;
+    color: var(--text-muted); font-family: var(--font-heading); font-size: .85rem;
   }
-  .back-home:hover { color: var(--gold-bright); }
+  #loginBox .back-home:hover { color: var(--gold-bright); }
+
+  #dashboard { position: relative; }
   #dashboard h1 { font-family: var(--font-title); font-size: 2rem; margin-bottom: 1.5rem; }
+  #dashboard .back-home {
+    position: absolute; top: 0; right: 0;
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .5rem 1rem; border: 1px solid var(--iron-border); border-radius: 4px;
+    color: var(--text-muted); font-family: var(--font-heading); font-size: .85rem;
+  }
+  #dashboard .back-home:hover { color: var(--gold-bright); border-color: var(--gold-primary); }
 
   ul#list { list-style: none; }
   ul#list li { border-bottom: 1px solid var(--iron-border); padding: .6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
@@ -116,7 +124,6 @@
 <body>
 
 <div id="loginBox" class="admin-box">
-  <a href="/" class="back-home">← Kembali ke Beranda</a>
   <svg class="login-seal" viewBox="0 0 100 100">
     <circle cx="50" cy="50" r="45" fill="#7a1c1c" stroke="#d4af37" stroke-width="3"/>
     <path d="M50 20c1.5 3 4 5 4 8a4 4 0 0 1-8 0c0-3 2.5-5 4-8z M40 35c2.5 0 5-1 6-4-1 4-4 6-6 6z M60 35c-2.5 0-5-1-6-4 1 4 4 6 6 6z M44 39h12v2H44z M50 39v6" fill="#f7d070" stroke="#f7d070"/>
@@ -126,10 +133,11 @@
   <input type="password" id="pw" placeholder="Kata sandi">
   <button class="btn-medieval gold-foil-btn" id="loginBtn">Masuk</button>
   <p id="loginErr" style="color:var(--crimson-bright);"></p>
+  <a href="/" class="back-home">← Kembali ke Beranda</a>
 </div>
 
 <div id="dashboard" style="display:none;">
-  <a href="/" class="back-home">← Kembali ke Beranda</a>
+  <a href="/" class="back-home">← Beranda</a>
   <h1>Dashboard Vanguard</h1>
   <div class="tab-bar">
     <button class="filter-btn active" data-table="leadership">Petinggi</button>
