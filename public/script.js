@@ -669,6 +669,16 @@ function initMedievalAudio() {
       soundBtn.innerHTML = getMedievalSvg(soundEnabled ? 'swords' : 'shield');
       if (soundEnabled) playFanfareSound();
     });
+
+    // Tahan tombol 1.2 detik -> gerbang admin
+    let holdTimer = null;
+    const startHold = () => { holdTimer = setTimeout(() => { window.location.href = '/admin'; }, 1200); };
+    const cancelHold = () => { clearTimeout(holdTimer); };
+    soundBtn.addEventListener('mousedown', startHold);
+    soundBtn.addEventListener('touchstart', startHold, { passive: true });
+    ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(evt =>
+      soundBtn.addEventListener(evt, cancelHold)
+    );
   }
 
   setup3DCardsTilt();
