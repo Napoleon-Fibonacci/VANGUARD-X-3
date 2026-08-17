@@ -25,6 +25,23 @@ function slugify(str) {
   return str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'item';
 }
 
+// Ikon lencana yang bisa dipilih. path SVG minimal, cukup buat preview tombol.
+const BADGE_ICONS = {
+  crown: '<path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/><path d="M3 20h18v2H3z"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  swords: '<path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l2 2 4-4-2-2"/><path d="M19.5 6.5L18 3h-3L3.5 14.5"/><path d="M5 21l-2-2 4-4 2 2"/>',
+  scroll: '<path d="M8 2h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6"/><path d="M4 6a2 2 0 0 1 2-2h10"/><path d="M8 10h8M8 14h6"/>',
+  wizard: '<path d="M12 2L4 19h16L12 2z"/><path d="M2 19h20v2H2z"/><path d="M12 9v4M10 11h4"/>',
+  castle: '<path d="M4 21V9l2-2 2 2v12M16 21V9l2-2 2 2v12M9 21V12h6v9"/><path d="M3 21h18"/><path d="M7 4h2v3H7zM15 4h2v3h-2zM11 2h2v4h-2z"/>',
+  trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8v4h8v-4h-1c-.55 0-1-.45-1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4z"/>',
+  medal: '<circle cx="12" cy="14" r="6"/><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.11"/><path d="M12 2L8.5 8.5h7L12 2z"/>',
+  fleur: '<path d="M12 2c1.5 3 4 5 4 8a4 4 0 0 1-8 0c0-3 2.5-5 4-8z"/><path d="M4 14c2.5 0 5-1 6-4-1 4-4 6-6 6z"/><path d="M20 14c-2.5 0-5-1-6-4 1 4 4 6 6 6z"/><path d="M8 18h8v2H8zM12 18v4"/>',
+  coins: '<circle cx="9" cy="9" r="6"/><path d="M15 9.5a6 6 0 1 1-6 6"/><circle cx="9" cy="9" r="2"/>'
+};
+function badgeSvg(key) {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${BADGE_ICONS[key]}</svg>`;
+}
+
 let currentTable = 'leadership';
 let editingId = null;
 
@@ -73,11 +90,26 @@ function fieldRow(field, tableKey) {
     </div>`;
   }
 
-  if (field === 'sort_order') {
+  if (field === 'badge') {
     return `<div class="admin-row">
       <label>${label}</label>
-      <input type="number" name="${field}" value="0" step="1">
-      <small>Menentukan posisi tampil di halaman utama — angka kecil tampil duluan. Boleh dibiarkan 0.</small>
+      <input type="hidden" name="badge">
+      <div class="badge-picker" data-picker-for="badge">
+        ${Object.keys(BADGE_ICONS).map(key => `<button type="button" class="badge-opt" data-badge="${key}" title="${key}">${badgeSvg(key)}</button>`).join('')}
+      </div>
+      <small>Pilih satu ikon lencana.</small>
+    </div>`;
+  }
+
+  if (field === 'sort_order') {
+    const seats = Array.from({ length: 46 }, (_, i) => i + 1);
+    return `<div class="admin-row">
+      <label>${label}</label>
+      <input type="hidden" name="sort_order" value="0">
+      <div class="seat-picker" data-picker-for="sort_order">
+        ${seats.map(n => `<button type="button" class="seat-opt" data-seat="${n}">${n}</button>`).join('')}
+      </div>
+      <small>Pilih urutan tampil — kotak dipilih akan menyala.</small>
     </div>`;
   }
 
@@ -125,6 +157,30 @@ function wireImageInputs(form) {
   });
 }
 
+function wirePickers(form) {
+  const badgeWrap = form.querySelector('[data-picker-for="badge"]');
+  if (badgeWrap) {
+    badgeWrap.querySelectorAll('.badge-opt').forEach(btn => {
+      btn.onclick = () => {
+        badgeWrap.querySelectorAll('.badge-opt').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        form.elements.badge.value = btn.dataset.badge;
+      };
+    });
+  }
+
+  const seatWrap = form.querySelector('[data-picker-for="sort_order"]');
+  if (seatWrap) {
+    seatWrap.querySelectorAll('.seat-opt').forEach(btn => {
+      btn.onclick = () => {
+        seatWrap.querySelectorAll('.seat-opt').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        form.elements.sort_order.value = btn.dataset.seat;
+      };
+    });
+  }
+}
+
 function renderForm() {
   const form = document.getElementById('itemForm');
   const heading = { leadership: 'Data Petinggi', knights: 'Data Ksatria', gallery: 'Data Galeri' }[currentTable];
@@ -139,6 +195,7 @@ function renderForm() {
          </div>`
       : '');
   wireImageInputs(form);
+  wirePickers(form);
 }
 renderForm();
 
@@ -198,6 +255,14 @@ async function loadList() {
       if (IMAGE_FIELDS.includes(k) && item[k]) {
         const preview = form.querySelector(`[data-preview-for="${k}"]`);
         if (preview) { preview.src = item[k]; preview.style.display = 'block'; }
+      }
+      if (k === 'badge' && item[k]) {
+        const btn = form.querySelector(`.badge-opt[data-badge="${item[k]}"]`);
+        if (btn) btn.classList.add('active');
+      }
+      if (k === 'sort_order') {
+        const btn = form.querySelector(`.seat-opt[data-seat="${item[k]}"]`);
+        if (btn) btn.classList.add('active');
       }
     });
     document.getElementById('cancelBtn').style.display = 'inline-block';
