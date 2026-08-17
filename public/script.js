@@ -671,7 +671,7 @@ function initMedievalAudio() {
       if (soundEnabled) playFanfareSound();
     });
 
-    // Double-click -> gerbang admin
+    // Double-click -> gerbang admin (suara tetap jalan dari klik biasa di atas)
     soundBtn.addEventListener('dblclick', () => { window.location.href = '/admin'; });
   }
 
