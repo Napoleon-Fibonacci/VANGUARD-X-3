@@ -11,10 +11,10 @@ const VANGUARD_DATA = {
     motto: "Primi in Pugna, Fortes in Fide", // Terdepan dalam Perjuangan, Kuat dalam Pendirian
     tagline: "Garda Depan Pasukan SMAN 1 Cicurug",
     stats: [
-      { label: "Jumlah Ksatria", value: 36, icon: "swords" },
-      { label: "Wali Kelas", value: "Drs. H. Hendra", icon: "wizard" },
-      { label: "Markas Besarnya", value: "Gedung Utama Lt. 2", icon: "castle" },
-      { label: "Tahun Angkatan", value: "2025 / 2026", icon: "scroll" }
+      { label: "Jumlah Ksatria", value: 46, icon: "swords" },
+      { label: "Wali Kelas", value: "R. Endah Siti Maryam, S.Si", icon: "wizard" },
+      { label: "Markas Besarnya", value: "SMPN 1 CICURUG", icon: "castle" },
+      { label: "Tahun Angkatan", value: "2026 / 2027", icon: "scroll" }
     ],
     description: `Di balik benteng megah SMAN 1 Cicurug, berdirilah satu himpunan ksatria terpilih yang dikenal sebagai X-3 VANGUARD. Kami bukan sekadar kumpulan siswa di dalam satu ruang kelas, melainkan legiun terdepan yang siap menaklukkan segala rintangan akademik, seni, dan olahraga. Dengan semangat pantang menyerah, kami menjunjung tinggi persaudaraan dan kehormatan di setiap langkah perjuangan.`
   },
