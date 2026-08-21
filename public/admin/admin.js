@@ -7,7 +7,6 @@ const FIELD_INFO = {
   badge: ['Ikon Lencana', 'nama ikon: crown, shield, scroll, dst (lihat daftar ikon di script.js)'],
   avatar: ['Foto', 'Upload foto avatar dari komputer'],
   nickname: ['Julukan', 'contoh: "Sang Penakluk"'],
-  squad: ['Pasukan', 'Garda Depan / Ordo Cendekia / Legiun Olahraga / Guild Seni'],
   sort_order: ['Urutan Tampil', ''],
   title_: ['Judul Foto', ''],
   category: ['Kategori', 'Event / Olahraga / Akademik / Kebersamaan'],
@@ -17,9 +16,14 @@ const FIELD_INFO = {
 
 const SCHEMAS = {
   leadership: ['name', 'role', 'title', 'motto', 'badge', 'avatar', 'sort_order'],
-  knights: ['name', 'nickname', 'role', 'motto', 'avatar', 'sort_order'], // rpg_stats edited via slider
+  knights: ['name', 'nickname', 'role', 'motto', 'avatar', 'sort_order'], // squad = random, rpg_stats = slider
   gallery: ['title', 'category', 'image', 'description', 'sort_order']
 };
+
+const SQUADS = ['Garda Depan', 'Ordo Cendekia', 'Legiun Olahraga', 'Guild Seni'];
+function randomSquad() {
+  return SQUADS[Math.floor(Math.random() * SQUADS.length)];
+}
 
 function slugify(str) {
   return str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'item';
@@ -270,6 +274,8 @@ document.getElementById('saveBtn').onclick = async () => {
     body[k] = k === 'sort_order' ? Number(v || 0) : v;
   });
   if (body.rpg_stats) body.rpg_stats = JSON.parse(body.rpg_stats || '{}');
+
+  if (currentTable === 'knights' && !editingId) body.squad = randomSquad(); // squad diacak otomatis pas buat baru
 
   const method = editingId ? 'PUT' : 'POST';
   if (editingId) {
